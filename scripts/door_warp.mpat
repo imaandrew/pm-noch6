@@ -1,0 +1,91 @@
+#new:Script $Script_80400000 {
+	Return
+	End
+}
+
+
+@ $Script_80259AD0 {
+	SetGroup  0000001B
+	Call  DisablePlayerInput    ( .True )
+	Wait  2`
+	Call  GetPlayerActionState  ( *Var3 )
+	Set   *Var4  00000000
+	If  *Var3  ==  .ActionState:Idle % 0
+		Add   *Var4  00000001
+	EndIf
+	If  *Var3  ==  .ActionState:Walk % 1
+		Add   *Var4  00000001
+	EndIf
+	If  *Var3  ==  .ActionState:Run % 2
+		Add   *Var4  00000001
+	EndIf
+	If  *Var4  ==  00000000
+		Call  DisablePlayerInput    ( .False )
+		Return
+	EndIf
+	Call  $Function_80245504 ( )
+	Call  PlaySoundAtCollider   ( ~Collider:deilitf 000002A2 00000000 )
+	ExecWait  $Script_80258408
+	Set   *Var0  00000003
+	Exec  $Script_80258504 *Var2
+	Call  PlayerMoveTo  ( 0000012C 00000172 0000000F )
+	Call  InterpPlayerYaw       ( FFFFFFEA 00000000 )
+	Thread
+		Call  PlaySoundAtCollider   ( ~Collider:deilitf 000001CF 00000000 )
+		Call  MakeLerp  ( 00000000 FFFFFF88 0000000F .Easing:Linear )
+		Loop
+			Call  UpdateLerp ( )
+			Call  RotateGroup   ( ~Model:to_flo *Var0 00000000 00000001 00000000 )
+			Wait  1`
+			If  *Var1  ==  00000000
+				BreakLoop
+			EndIf
+		EndLoop
+		Wait  45`
+		Call  MakeLerp  ( FFFFFF88 00000000 0000000F .Easing:Linear )
+		Loop
+			Call  UpdateLerp ( )
+			Call  RotateGroup   ( ~Model:to_flo *Var0 00000000 00000001 00000000 )
+			Wait  1`
+			If  *Var1  ==  00000000
+				BreakLoop
+			EndIf
+		EndLoop
+		Call  PlaySoundAtCollider   ( ~Collider:deilitf 000001D0 00000000 )
+	EndThread
+	Wait  15`
+	Call  PlayerMoveTo      ( 00000101 0000012C 0000001E )
+	Wait  60`
+	Call  DisablePlayerPhysics  ( .True )
+	Call  SetPlayerPos      ( 00000000 FFFFFE0C 00000000 )
+	Call  $Function_8024552C ( )
+	Call  DisablePartnerAI  ( 00000000 )
+	Call  SetNpcPos ( .Npc:Partner 00000000 FFFFFE0C 00000000 )
+	Loop
+		Wait  1`
+		DoesScriptExist  *Var2 *Var0
+		If  *Var0  ==  00000000
+			BreakLoop
+		EndIf
+	EndLoop
+	Call  PlaySoundAtCollider   ( ~Collider:deilitf 000006A2 00000000 )
+	ExecWait  $Script_802585B8
+	Call  EnableGroup   ( ~Model:to_flo .False )
+	Call  EnableGroup   ( ~Model:r_door .True )
+	Call  MakeLerp      ( 000000B4 00000168 00000014 .Easing:Linear )
+	Loop
+		Call  UpdateLerp ( )
+		Call  RotateModel   ( ~Model:r_door *Var0 00000000 00000001 00000000 )
+		Call  RotateModel   ( ~Model:r_gate *Var0 00000000 00000001 00000000 )
+		Wait  1`
+		If  *Var1  ==  00000000
+			BreakLoop
+		EndIf
+	EndLoop
+	Call EnablePartner ( 9 )
+	ExecWait $Script_80400000
+	Call  GotoMap   ( $ASCII_80262880 00000000 ) % flo_00
+	Wait  100`
+	Return
+	End
+}
